@@ -1,6 +1,4 @@
-import { useState } from "react";
 import Header from "./components/header";
-import Cardcomponennt from "./components/card-componennt";
 import SwipeComponenet from "./components/swipe-componenet";
 
 function App() {

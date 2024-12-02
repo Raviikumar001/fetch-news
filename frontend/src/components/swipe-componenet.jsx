@@ -3,6 +3,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { A11y } from "swiper/modules";
 import { openDB } from "idb";
 import CardComponent from "./card-componennt";
+import ShimmerComponent from "./shimmer-components";
 
 // Import Swiper styles
 import "swiper/css";
@@ -32,7 +33,7 @@ const useFetchWithIndexedDBCache = (url, options = {}) => {
         // Check cache
         const cachedData = await db.get("articles", url);
         if (cachedData && Date.now() - cachedData.timestamp < 3600000) {
-          setData(cachedData.data); // Use full response here
+          setData(cachedData.data);
           setLoading(false);
           return;
         }
@@ -43,10 +44,9 @@ const useFetchWithIndexedDBCache = (url, options = {}) => {
 
         const result = await response.json();
 
-        // Store the entire response
         await db.put("articles", {
           url,
-          data: result, // Save full response
+          data: result,
           timestamp: Date.now(),
         });
 
@@ -87,37 +87,45 @@ const SwipeComponent = () => {
   // Memoize articles to prevent unnecessary re-renders
   const articles = useMemo(() => data?.articles || [], [data]);
 
-  // Render loading state
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-screen">
-        <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-blue-500"></div>
+      <div className="flex flex-wrap justify-center items-center gap-4">
+        {Array.from({ length: 6 }).map((_, index) => (
+          <ShimmerComponent key={index} />
+        ))}
       </div>
     );
   }
 
-  // Render error state
   if (error) {
     return <div className="flex justify-center items-center h-screen text-red-500">Error loading news: {error.message}</div>;
   }
 
-  // Render empty state
   if (articles.length === 0) {
     return <div className="text-center mt-10">No articles found</div>;
   }
 
   return (
-    <div ref={componentRef} className="h-screen w-full overflow-hidden flex justify-center">
-      <div className="relative h-full w-[80%] mt-5">
-        <Swiper modules={[A11y]} spaceBetween={50} slidesPerView={1} onSlideChange={(swiper) => setCurrentIndex(swiper.activeIndex)} className="w-full">
-          {articles.map((article, index) => (
-            <SwiperSlide key={index}>
-              <CardComponent sourceName={article.source.name} title={article.title} author={article.author} description={article.description} urlToImage={article.urlToImage} link={article.url} />
-            </SwiperSlide>
-          ))}
-        </Swiper>
+    <>
+      <div ref={componentRef} className=" w-full overflow-hidden flex justify-center">
+        <div className="relative w-[80%] mt-5">
+          <Swiper modules={[A11y]} spaceBetween={50} slidesPerView={1} onSlideChange={(swiper) => setCurrentIndex(swiper.activeIndex)} className="w-full">
+            {articles.map((article, index) => (
+              <SwiperSlide key={index}>
+                <CardComponent sourceName={article.source.name} title={article.title} author={article.author} description={article.description} urlToImage={article.urlToImage} link={article.url} />
+              </SwiperSlide>
+            ))}
+          </Swiper>
+        </div>
       </div>
-    </div>
+      <div className="flex flex-wrap justify-center items-center gap-4 pl-5 pt-5">
+        {articles.map((article, index) => (
+          <div key={index} className="w-[400px]">
+            <CardComponent sourceName={article.source.name} title={article.title} author={article.author} description={article.description} urlToImage={article.urlToImage} link={article.url} />
+          </div>
+        ))}
+      </div>
+    </>
   );
 };
 

@@ -27,7 +27,6 @@ const newsData = JSON.parse(rawData);
 
 app.get("/news", (req, res) => {
   try {
-    // Default values
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
 
@@ -38,7 +37,6 @@ app.get("/news", (req, res) => {
     // Slice the articles based on pagination
     const paginatedArticles = newsData.articles.slice(startIndex, endIndex);
 
-    // Prepare response
     const response = {
       status: newsData.status,
       page: page,
