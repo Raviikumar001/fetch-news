@@ -1,6 +1,12 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useRef, useMemo, useEffect } from "react";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { A11y } from "swiper/modules";
 import { openDB } from "idb";
 import CardComponent from "./card-componennt";
+
+// Import Swiper styles
+import "swiper/css";
+import "swiper/css/a11y";
 
 const useFetchWithIndexedDBCache = (url, options = {}) => {
   const memoizedOptions = React.useMemo(() => options, []);
@@ -75,6 +81,13 @@ const SwipeComponent = () => {
   const { data, loading, error } = useFetchWithIndexedDBCache("http://localhost:5000/news");
   const [currentIndex, setCurrentIndex] = useState(0);
 
+  // Create a ref for the component to use consistently
+  const componentRef = useRef(null);
+
+  // Memoize articles to prevent unnecessary re-renders
+  const articles = useMemo(() => data?.articles || [], [data]);
+
+  // Render loading state
   if (loading) {
     return (
       <div className="flex justify-center items-center h-screen">
@@ -83,19 +96,26 @@ const SwipeComponent = () => {
     );
   }
 
+  // Render error state
   if (error) {
     return <div className="flex justify-center items-center h-screen text-red-500">Error loading news: {error.message}</div>;
   }
 
-  const articles = data?.articles || []; // Safely access articles from the data object
-  console.log(articles);
+  // Render empty state
+  if (articles.length === 0) {
+    return <div className="text-center mt-10">No articles found</div>;
+  }
 
   return (
-    <div className="container mx-auto px-4 py-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {articles?.map((article, index) => (
-          <CardComponent key={index} sourceName={article.source.name} title={article.title} author={article.author} description={article.description} urlToImage={article.urlToImage} link={article.url} />
-        ))}
+    <div ref={componentRef} className="h-screen w-full overflow-hidden flex justify-center">
+      <div className="relative h-full w-[80%] mt-5">
+        <Swiper modules={[A11y]} spaceBetween={50} slidesPerView={1} onSlideChange={(swiper) => setCurrentIndex(swiper.activeIndex)} className="w-full">
+          {articles.map((article, index) => (
+            <SwiperSlide key={index}>
+              <CardComponent sourceName={article.source.name} title={article.title} author={article.author} description={article.description} urlToImage={article.urlToImage} link={article.url} />
+            </SwiperSlide>
+          ))}
+        </Swiper>
       </div>
     </div>
   );

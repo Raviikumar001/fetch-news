@@ -28,40 +28,73 @@
 import React from "react";
 import { UpRightArrow } from "../svg/up-right-arrow";
 
+// const CardComponent = ({ sourceName, title, author, description, urlToImage, link }) => {
+//   return (
+//     <div className="w-full bg-white rounded-xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-xl">
+//       <div className="relative">
+//         <img src={urlToImage} alt={title} className="w-full h-[400px] object-cover" />
+//         {sourceName && <div className="absolute top-2 right-2 bg-black/50 text-white px-2 py-1 rounded-md text-xs">{sourceName}</div>}
+//       </div>
+
+//       <div className="p-4">
+//         <div className="flex justify-between items-start mb-2">
+//           <h2 className="text-lg font-bold text-gray-800 line-clamp-2 pr-2 flex-grow">{title}</h2>
+//           {link && (
+//             <a href={link} target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-blue-600 transition-colors ml-2">
+//               <UpRightArrow className="w-5 h-5" />
+//             </a>
+//           )}
+//         </div>
+
+//         <p className="text-gray-600 text-sm mb-4 line-clamp-2">{description}</p>
+
+//         <div className="flex items-center justify-between">{author && <div className="text-sm text-gray-500">By {author}</div>}</div>
+//       </div>
+//     </div>
+//   );
+// };
+
 const CardComponent = ({ sourceName, title, author, description, urlToImage, link }) => {
-  return (
-    <div className="w-[300px] bg-white rounded-xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-xl">
+  // Wrapper component to handle card-wide clicking
+  const CardContent = () => (
+    <>
       <div className="relative">
-        <img src={urlToImage} alt={title} className="w-full h-[200px] object-cover" />
+        <img src={urlToImage} alt={title} className="w-full h-[400px] object-cover" />
         {sourceName && <div className="absolute top-2 right-2 bg-black/50 text-white px-2 py-1 rounded-md text-xs">{sourceName}</div>}
       </div>
 
       <div className="p-4">
         <div className="flex justify-between items-start mb-2">
           <h2 className="text-lg font-bold text-gray-800 line-clamp-2 pr-2 flex-grow">{title}</h2>
-          {link && (
-            <a href={link} target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-blue-600 transition-colors ml-2">
+          {/* {link && (
+            <a href={link} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="text-gray-500 hover:text-blue-600 transition-colors ml-2">
               <UpRightArrow className="w-5 h-5" />
             </a>
-          )}
+          )} */}
         </div>
 
         <p className="text-gray-600 text-sm mb-4 line-clamp-2">{description}</p>
 
         <div className="flex items-center justify-between">{author && <div className="text-sm text-gray-500">By {author}</div>}</div>
       </div>
+    </>
+  );
+
+  // If link is present, wrap content in an anchor tag
+  if (link) {
+    return (
+      <a href={link} target="_blank" rel="noopener noreferrer" className="block w-full bg-white rounded-xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-xl cursor-pointer">
+        <CardContent />
+      </a>
+    );
+  }
+
+  // If no link, render as a regular div
+  return (
+    <div className="w-full bg-white rounded-xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-xl">
+      <CardContent />
     </div>
   );
 };
-
-// Default props to provide fallback values
-// CardComponent.defaultProps = {
-//   sourceName: "",
-//   title: "",
-//   author: "",
-//   description: "",
-//   urlToImage: "https://cdn.mos.cms.futurecdn.net/xskHMTNsDeoUaW9jxDHrfS-1200-80.jpg",
-//   link: "",
-// };
 
 export default CardComponent;
